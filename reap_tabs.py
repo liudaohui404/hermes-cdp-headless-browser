@@ -14,6 +14,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
 import sys
 import time
@@ -50,7 +51,8 @@ def _eval_on_tab(ws_url: str, expression: str):
         # Bound each tab's WS round-trip so a single slow/hung tab can't stall
         # the whole reaper run (matters when many tabs are open).
         return asyncio.run(asyncio.wait_for(_run(), timeout=3.0))
-    except Exception:
+    except Exception as e:
+        sys.stderr.write(f"[reap_tabs] eval failed on tab: {e!r}\n")
         return None
 
 
