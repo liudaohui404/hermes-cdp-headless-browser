@@ -37,12 +37,20 @@ Or one-click from a website / README:
 
 ## In-session commands
 
-| Command | What it does |
-|---|---|
-| `/cdp-browser status` | Is it listening? how many page tabs? |
-| `/cdp-browser launch` | Force (re)launch now |
-| `/cdp-browser reap` | Run the idle-tab reaper once |
-| `/cdp-browser stop` | Close all page tabs (browser relaunches next gateway start) |
+No slash command, no LLM — just a plain CLI (`cdp-browser.py`, pure stdlib).
+Run it from anywhere, or have an agent call it directly:
+
+```bash
+python cdp-browser.py status          # listening? browser? page tab count?
+python cdp-browser.py launch          # force (re)launch now
+python cdp-browser.py reap            # run the idle-tab reaper once
+python cdp-browser.py stop            # close all page tabs (browser keeps running)
+python cdp-browser.py config          # print current plugin settings
+```
+
+`status` queries the CDP endpoint directly (sub-second, no model involved). The
+script is also copied to `~/.hermes/scripts/cdp-browser.py` by the startup hook,
+so `hermes cron` or any shell can call it.
 
 ## Important: tag the tabs you use
 

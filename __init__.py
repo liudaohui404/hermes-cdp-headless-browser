@@ -253,57 +253,6 @@ def status() -> dict:
 
 
 # --------------------------------------------------------------------------- #
-# Slash command: /cdp-browser
-# --------------------------------------------------------------------------- #
-def _cmd_cdp_browser(raw_args: str) -> str:
-    sub = (raw_args or "").strip().lower().split()
-    action = sub[0] if sub else "status"
-    if action == "launch":
-        s = ensure_browser_launched() if _cfg("auto_launch", True) else \
-            {"ok": False, "error": "auto_launch is disabled in plugin config"}
-    elif action == "stop":
-        s = stop_browser()
-    elif action == "reap":
-        if not _cfg("auto_reap", True):
-            s = {"ok": False, "error": "auto_reap is disabled in plugin config"}
-        else:
-            reaper = PLUGIN_DIR / "reap_tabs.py"
-            if reaper.exists():
-                try:
-                    out = subprocess.run(
-                        [sys.executable, str(reaper),
-                         "--after", str(reap_after_ms()),
-                         "--max", str(max_tabs())],
-                        capture_output=True, text=True, timeout=30,
-                    )
-                    s = {"ok": True, "output": out.stdout.strip() or "(no idle tabs)"}
-                except Exception as e:
-                    s = {"ok": False, "error": str(e)}
-            else:
-                s = {"ok": False, "error": "reaper script not found"}
-    elif action == "config":
-        s = {
-            "auto_launch": _cfg("auto_launch", True),
-            "headless": _cfg("headless", True),
-            "auto_set_cdp_url": _cfg("auto_set_cdp_url", True),
-            "auto_reap": _cfg("auto_reap", True),
-            "cdp_port": cdp_port(),
-            "reap_after_min": _cfg("reap_after_min", 10),
-            "max_tabs": max_tabs(),
-        }
-    else:  # status (default)
-        s = status()
-        s["config"] = {
-            "auto_launch": _cfg("auto_launch", True),
-            "headless": _cfg("headless", True),
-            "auto_set_cdp_url": _cfg("auto_set_cdp_url", True),
-            "auto_reap": _cfg("auto_reap", True),
-        }
-    import json
-    return "```json\n" + json.dumps(s, ensure_ascii=False, indent=2) + "\n```"
-
-
-# --------------------------------------------------------------------------- #
 # Hook: gateway startup -> ensure browser
 # --------------------------------------------------------------------------- #
 def _hermes_bin() -> str:
@@ -421,12 +370,6 @@ async def _on_gateway_startup(event_type: str, context: dict) -> None:
 # --------------------------------------------------------------------------- #
 def register(ctx) -> None:
     ctx.register_hook("gateway:startup", _on_gateway_startup)
-    ctx.register_command(
-        name="cdp-browser",
-        handler=_cmd_cdp_browser,
-        description="Manage the persistent headless CDP browser (status/launch/stop/reap).",
-        args_hint="[status|launch|stop|reap]",
-    )
     # Bundle the skill so the agent knows the window.name tagging convention.
     skill_md = PLUGIN_DIR / "skills" / "cdp-headless-browser" / "SKILL.md"
     if skill_md.exists():
