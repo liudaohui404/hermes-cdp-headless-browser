@@ -399,7 +399,6 @@ def register(ctx) -> None:
         description="Manage the persistent headless CDP browser (status/launch/stop/reap/config). Delegates to cdp-browser.py — no LLM in the loop.",
         args_hint="[status|launch|stop|reap|config]",
     )
-    # Bundle the skill so the agent knows the window.name tagging convention.
-    skill_md = PLUGIN_DIR / "skills" / "cdp-headless-browser" / "SKILL.md"
-    if skill_md.exists():
-        ctx.register_skill("cdp-headless-browser", skill_md)
+    # NOTE: intentionally NOT registering a skill for this plugin — the user
+    # wants the slash COMMAND (zero-skill-overhead), not a SKILLS-list entry.
+    # The window.name tagging convention is documented in README instead.

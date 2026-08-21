@@ -61,8 +61,9 @@ actively using survives:
 js("window.name = 'h:' + Date.now()")
 ```
 
-This convention is also documented in the bundled skill
-`cdp-headless-browser` (auto-loaded by the plugin).
+This convention is documented above and in the plugin README — there is no
+bundled skill; use the `/cdp-headless-browser` slash command (a plain command,
+not a skill).
 
 ## Config (`config.yaml` → `plugins.entries.cdp-headless-browser.settings`)
 
