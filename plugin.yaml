@@ -1,0 +1,50 @@
+name: cdp-headless-browser
+version: 1.0.0
+manifest_version: 2
+api_version: 1
+license: MIT
+author: liudaohui404
+homepage: https://github.com/liudaohui404/hermes-cdp-headless-browser
+description: >-
+  Persistent headless Chromium-family browser over CDP. Auto-launched on
+  gateway startup so Hermes browser tools (browser_exec / browser_navigate)
+  always have an always-on browser to attach to via browser.cdp_url — no more
+  "forgot to open the browser" falls back to curl. Idle tabs are auto-reaped
+  by a bundled cron job to keep memory bounded. Cross-platform (Chrome /
+  Chromium / Edge / Brave auto-detected).
+tags: [browser, cdp, headless, automation, memory]
+config_schema:
+  # --- feature toggles (all on by default; set false to disable) ---
+  auto_launch:
+    type: bool
+    default: true
+    description: "On gateway startup, launch the headless browser if the CDP port is not already serving."
+  headless:
+    type: bool
+    default: true
+    description: "Launch the browser with --headless=new (no window). Set false to run a visible windowed browser."
+  auto_set_cdp_url:
+    type: bool
+    default: true
+    description: "On startup, set browser.cdp_url to this plugin's CDP endpoint so browser tools use it."
+  auto_reap:
+    type: bool
+    default: true
+    description: "Register (and keep registered) the idle-tab reaper cron job to bound memory."
+  # --- tuning ---
+  cdp_port:
+    type: int
+    default: 9222
+    description: "Local CDP debug port the headless browser listens on."
+  reap_after_min:
+    type: int
+    default: 10
+    description: "Close page tabs idle (no activity) longer than this many minutes."
+  max_tabs:
+    type: int
+    default: 5
+    description: "Hard cap on page tabs; oldest are reaped beyond this."
+  browser_bin:
+    type: str
+    default: ""
+    description: "Explicit browser binary path. Empty = auto-detect Chrome/Chromium/Edge/Brave."

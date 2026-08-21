@@ -1,0 +1,10 @@
+{
+  "name": "hermes-cdp-headless-browser",
+  "version": "1.0.0",
+  "description": "Persistent headless Chromium-family browser over CDP, auto-launched on gateway startup and reaped of idle tabs. Gives Hermes browser tools (browser_exec etc.) a always-on browser without per-call headless spin-up, with automatic memory-friendly tab cleanup.",
+  "author": "liudaohui404",
+  "license": "MIT",
+  "homepage": "https://github.com/liudaohui404/hermes-cdp-headless-browser",
+  "tags": ["browser", "cdp", "headless", "automation", "memory"],
+  "platforms": ["linux", "macos", "windows"]
+}
