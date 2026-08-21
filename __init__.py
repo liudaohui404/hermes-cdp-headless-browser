@@ -253,6 +253,29 @@ def status() -> dict:
 
 
 # --------------------------------------------------------------------------- #
+# Slash command: /cdp-headless-browser  (thin wrapper — delegates to cdp-browser.py,
+# no LLM reasoning in the loop; the CLI does the real work over CDP)
+# --------------------------------------------------------------------------- #
+def _cmd_cdp_browser(raw_args: str) -> str:
+    sub = (raw_args or "").strip().lower().split()
+    action = sub[0] if sub else "status"
+    cli = PLUGIN_DIR / "cdp-browser.py"
+    if not cli.exists():
+        return "error: cdp-browser.py not found next to the plugin"
+    try:
+        r = subprocess.run(
+            [sys.executable, str(cli), action],
+            capture_output=True, text=True, timeout=30,
+        )
+        out = (r.stdout or "").strip()
+        if r.returncode != 0 and not out:
+            out = (r.stderr or "").strip()
+        return out or "(no output)"
+    except Exception as e:
+        return f"error: {e}"
+
+
+# --------------------------------------------------------------------------- #
 # Hook: gateway startup -> ensure browser
 # --------------------------------------------------------------------------- #
 def _hermes_bin() -> str:
@@ -370,6 +393,12 @@ async def _on_gateway_startup(event_type: str, context: dict) -> None:
 # --------------------------------------------------------------------------- #
 def register(ctx) -> None:
     ctx.register_hook("gateway:startup", _on_gateway_startup)
+    ctx.register_command(
+        name="cdp-headless-browser",
+        handler=_cmd_cdp_browser,
+        description="Manage the persistent headless CDP browser (status/launch/stop/reap/config). Delegates to cdp-browser.py — no LLM in the loop.",
+        args_hint="[status|launch|stop|reap|config]",
+    )
     # Bundle the skill so the agent knows the window.name tagging convention.
     skill_md = PLUGIN_DIR / "skills" / "cdp-headless-browser" / "SKILL.md"
     if skill_md.exists():

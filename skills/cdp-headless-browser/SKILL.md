@@ -28,18 +28,18 @@ js("window.name = 'h:' + Date.now()")   # refresh activity marker (survives navi
 Do this right after `new_tab(...)` too. Tabs you never touch get reaped — that
 is the desired memory-bounding behavior.
 
-## Commands (plain CLI — no LLM, no slash command)
+## Commands
 
-Run `cdp-browser.py` directly (pure stdlib, sub-second). Copied to
-`~/.hermes/scripts/cdp-browser.py` by the startup hook.
+`/cdp-headless-browser <action>` — slash command that delegates to `cdp-browser.py`
+(no LLM in the loop; output is the CLI's plain text, sub-second).
 
-- `python cdp-browser.py status` — listening? browser? page tab count
-- `python cdp-browser.py launch` — force (re)launch now
-- `python cdp-browser.py reap` — run the reaper once
-- `python cdp-browser.py stop` — close all page tabs (browser stays, relaunches on next gateway start)
-- `python cdp-browser.py config` — print current plugin settings
+- `/cdp-headless-browser status` — listening? browser? page tab count
+- `/cdp-headless-browser launch` — force (re)launch now
+- `/cdp-headless-browser reap` — run the reaper once
+- `/cdp-headless-browser stop` — close all page tabs (browser stays, relaunches on next gateway start)
+- `/cdp-headless-browser config` — print current plugin settings
 
-Status queries the CDP endpoint directly with no model in the loop.
+Or call the CLI directly: `python cdp-browser.py <action>`.
 
 ## Config (config.yaml → `plugins.entries.cdp-headless-browser.settings`)
 
